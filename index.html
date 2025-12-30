@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub Connect | Signup</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <main>
+      <div id="blurDivFirst"></div>
+      <div id="blurDivSecond"></div>
+      <div id="contentWrapper">
+        <nav class="navigationMenu">
+          <div class="logo">
+            <h3>ProdM<sub>manager</sub></h3>
+          </div>
+          <div class="themeChanger">
+            <button>Toggle Theme</button>
+          </div>
+        </nav>
+        <div class="tempratureContent">
+          <img
+            src="https://images.unsplash.com/photo-1421789665209-c9b2a435e3dc?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt=""
+          />
+          <div class="celcius">
+            <h1 id="temp">
+              <i class="fa-solid fa-temperature-arrow-down"></i>
+              Temprature:-90°C
+            </h1>
+            <h1 id="temp" class="airQuality">
+              <i class="fa-solid fa-temperature-arrow-down"></i>
+              Air Quality:-
+            </h1>
+            <h1 id="temp" class="heatIndex">
+              <i class="fa-solid fa-temperature-arrow-down"></i>
+              Heat Index:-
+            </h1>
+            <h1 id="temp" class="humidity">
+              <i class="fa-solid fa-temperature-arrow-down"></i>
+              Humidity:-
+            </h1>
+            <h1 id="temp" class="windDegreeSpeed">
+              <i class="fa-solid fa-temperature-arrow-down"></i>
+              Wind Degree & Speed:-
+            </h1>
+          </div>
+        </div>
+        <div class="functionalities">
+          <div class="codeTimeMachine" id="0">
+            <img
+              src="https://images.unsplash.com/photo-1495584816685-4bdbf1b5057e?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt=""
+            />
+            <h3>Code Time Machine</h3>
+          </div>
+          <div class="codeTimeMachine" id="1">
+            <img
+              src="https://images.unsplash.com/photo-1759884247146-b6cba3d92341?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt=""
+            />
+            <h3>Task Management</h3>
+          </div>
+          <div class="codeTimeMachine" id="2">
+            <img
+              src="https://images.unsplash.com/photo-1646651562847-4b015d52c861?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt=""
+            />
+            <h3>Pomodoro Timer</h3>
+          </div>
+          <div class="codeTimeMachine" id="3">
+            <img
+              src="https://images.unsplash.com/photo-1698620225002-36b415f78d57?q=80&w=1922&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt=""
+            />
+            <h3>Daily Quotes</h3>
+          </div>
+        </div>
+
+        <div class="pages timemachine" id="0">
+          <div class="header">
+            <h2>Code Time Machine</h2>
+            <button id="0">Close Page</button>
+          </div>
+          <div class="divider">
+            <div class="snapshots">
+              <div class="snapHeader">
+                Snapshots
+                <i class="fa-solid fa-angle-down" style="color: #b197fc"></i>
+              </div>
+            </div>
+            <div class="editor">
+              <div class="editorHeader">
+                <h4><strong>Editing:</strong> Current Version</h4>
+
+                <h5>Auto-Saved at 5:20 PM</h5>
+              </div>
+              <div class="savingFeature">
+                <div class="feat">
+                  <i
+                    class="fa-solid fa-arrow-rotate-right"
+                    style="color: #b197fc"
+                  ></i>
+                  <p>Auto-Saved at 5:20 PM</p>
+                </div>
+                <i class="fa-regular fa-message" style="color: #b197fc"></i>
+              </div>
+              <div class="editor-container">
+                <div id="lineNumbers"><p>1</p></div>
+
+                <textarea
+                  id="codeEditor"
+                  spellcheck="false"
+                  placeholder="Write JavaScript here..."
+                ></textarea>
+              </div>
+              <div class="codeRunner">
+                <button onclick="runCode()">Run Code</button>
+                <button onclick="revertCode()">Revert To Previous</button>
+              </div>
+
+              <pre id="output"></pre>
+            </div>
+            <div class="changes"></div>
+          </div>
+        </div>
+        <!-- <div class="pages task" id="1">
+          <h1>Task Management</h1>
+        </div>
+        <div class="pages timer" id="2">
+          <h1>Pomodoro Timer</h1>
+        </div>
+        <div class="pages quotes" id="3">
+          <h1>Daily Quotes</h1>
+        </div> -->
+      </div>
+      <div class="signupForm">
+        <form id="profileForm">
+          <div class="form-header">
+            <div class="logo-container">
+              <i class="fab fa-github"></i>
+            </div>
+            <h2>Create Account</h2>
+            <p class="form-subtitle">Enter your details to get started</p>
+          </div>
+
+          <div class="form-group">
+            <label for="username"> <i class="fas fa-user"></i> Username </label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="Enter your username"
+              required
+            />
+            <p class="showError"></p>
+          </div>
+
+          <div class="form-group">
+            <label for="githubId">
+              <i class="fab fa-github"></i> GitHub ID
+            </label>
+            <input
+              type="text"
+              id="githubId"
+              name="githubId"
+              placeholder="Enter your GitHub username"
+              required
+            />
+          </div>
+
+          <div class="form-footer">
+            <button type="submit" class="submit-btn">
+              <span>Connect GitHub</span>
+              <i class="fas fa-arrow-right"></i>
+            </button>
+            <p class="agreement">
+              By signing up, you agree to our
+              <a href="#">Terms</a> and
+              <a href="#">Privacy Policy</a>
+            </p>
+          </div>
+        </form>
+      </div>
+
+      <div class="floating-elements">
+        <div class="floating-element el1"><i class="fab fa-github"></i></div>
+        <div class="floating-element el2"><i class="fas fa-code"></i></div>
+        <div class="floating-element el3"><i class="fas fa-terminal"></i></div>
+        <div class="floating-element el4">
+          <i class="fas fa-laptop-code"></i>
+        </div>
+      </div>
+      <div id="loadingOverlay" class="overlay hidden">
+        <div class="spinner"></div>
+      </div>
+    </main>
+
+    <script src="script.js" defer></script>
+  </body>
+</html>
