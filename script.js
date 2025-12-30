@@ -21,6 +21,24 @@ function usernameStrenghtChecker(username) {
     return false;
   } else return true;
 }
+function timeAgo(timestamp) {
+  const diff = Math.floor((Date.now() - timestamp) / 1000);
+
+  if (diff < 60) return "Just now";
+  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} hr ago`;
+
+  return `${Math.floor(diff / 86400)} days ago`;
+}
+
+function getFormattedTime() {
+  const now = new Date();
+  return now.toLocaleTimeString("en-IN", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
 
 function showLoader() {
   overlay.classList.remove("hidden");
@@ -131,6 +149,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     await initDB();
     user = await getUser();
     renderUsers(user);
+
+    getSnapshots();
   } catch (err) {
     console.error(err);
   }
@@ -273,19 +293,15 @@ function runCode() {
   console.log = originalLog;
 }
 runCode();
-function scheduleAutoSave() {
-  clearTimeout(saveTimer);
+setInterval(() => {
+  if (!db) return;
 
-  saveTimer = setTimeout(() => {
-    if (textarea.value !== lastSavedValue) {
-      saveSnapShots(textarea.value);
-      lastSavedValue = textarea.value;
-      console.log("Snapshot saved");
-    }
-  }, 5000);
-}
+  if (textarea.value !== lastSavedValue) {
+    saveSnapShots(textarea.value);
+    lastSavedValue = textarea.value;
+  }
+}, 20000);
 
-textarea.addEventListener("input", scheduleAutoSave);
 function saveSnapShots(value) {
   if (!db) {
     console.error("DB not ready yet");
@@ -295,26 +311,47 @@ function saveSnapShots(value) {
   const store = transaction.objectStore("codeSnapshots");
   store.add({
     code: value,
-    timestamp: Date.now(),
+    timestamp: getFormattedTime(),
     cursorPros: textarea.selectionStart,
+    createdAt: Date.now(),
   });
+  transaction.oncomplete = () => {
+    getSnapshots();
+    console.log("snapshot saved");
+  };
+
+  transaction.onerror = () => {
+    console.error("Transaction failed");
+  };
 }
-// function saveUser(username, githubId) {
-//   if (!db) {
-//     console.error("DB not ready yet");
-//     return;
-//   }
+function getSnapshots() {
+  if (!db) {
+    console.error("DB not ready yet ");
+  }
+  const transaction = db.transaction("codeSnapshots", "readonly");
+  const store = transaction.objectStore("codeSnapshots");
+  const request = store.getAll();
+  request.onsuccess = () => {
+    displaySnapShots(request.result);
+  };
+  request.onerror = () => {
+    console.error("Failed to fetch snapshots");
+  };
+}
 
-//   const transaction = db.transaction("users", "readwrite");
-//   const store = transaction.objectStore("users");
-
-//   store.add({ username, githubId });
-
-//   transaction.oncomplete = () => {
-//     console.log("User saved");
-//   };
-
-//   transaction.onerror = () => {
-//     console.error("Transaction failed");
-//   };
-// }
+function displaySnapShots(result) {
+  console.log(result);
+  `<div class="snapTimings">
+                  
+                </div>`;
+  Array.isArray(result) &&
+    result.forEach((item) => {
+      let snapTimingsDiv = document.createElement("div");
+      snapTimingsDiv.className = "snapTimings";
+      snapTimingsDiv.innerHTML = `
+      <p>${item?.timestamp}</p>
+                  <p>${timeAgo(item.createdAt)}</p>
+      `;
+      document.querySelector(".snapShots").append(snapTimingsDiv);
+    });
+}

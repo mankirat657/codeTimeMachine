@@ -627,9 +627,13 @@ main {
 .divider .snapshots {
   width: 20vw;
   height: 39.6vw;
+  overflow: auto;
   border-radius: var(--rounded-xl);
   background-color: var(--ternarysec);
   border: 2px solid var(--ternary);
+}
+.divider .snapshots::-webkit-scrollbar-thumb {
+  background-color: var(--ternary);
 }
 .divider .editor {
   width: 58vw;
@@ -741,4 +745,20 @@ h5 {
 }
 #output::-webkit-scrollbar-thumb {
   background-color: var(--ternaryTer);
+}
+.snapShots {
+  display: flex;
+  flex-direction: column;
+
+  gap: var(--space-xsx);
+}
+.snapshots .snapTimings {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-xs);
+  background-color: var(--ternaryTer);
+}
+.snapshots .snapTimings p {
+  font-size: 0.8rem;
 }
