@@ -83,6 +83,23 @@
         </div>
 
         <div class="pages timemachine" id="0">
+          <div class="showCurrentCode" data-code="yes"></div>
+          <div class="snapshotContextMenu" id="snapshotContextMenu">
+            <button data-action="revert">
+              <i class="fa-solid fa-rotate-left"></i>
+              <span>Revert</span>
+            </button>
+
+            <button data-action="delete">
+              <i class="fa-solid fa-trash"></i>
+              <span>Delete</span>
+            </button>
+            <button id="export" data-action="export">
+              <i class="fa-regular fa-file-export" style="color: #63e6be"></i>
+              <span>Export</span>
+            </button>
+          </div>
+
           <div class="header">
             <h2>Code Time Machine</h2>
             <button id="0">Close Page</button>
@@ -91,7 +108,7 @@
             <div class="snapshots">
               <div class="snapHeader">
                 Snapshots
-                <i class="fa-solid fa-angle-down" style="color: #b197fc"></i>
+                <i class="fa-solid fa-angle-down" style="color: #97fcb9"></i>
               </div>
               <div class="snapShots"></div>
             </div>
@@ -99,17 +116,17 @@
               <div class="editorHeader">
                 <h4><strong>Editing:</strong> Current Version</h4>
 
-                <h5>Auto-Saved at 5:20 PM</h5>
+                <h5 class="autosaved">Auto-Saved at 5:20 PM</h5>
               </div>
               <div class="savingFeature">
                 <div class="feat">
                   <i
                     class="fa-solid fa-arrow-rotate-right"
-                    style="color: #b197fc"
+                    style="color: #97fcb9"
                   ></i>
-                  <p>Auto-Saved at 5:20 PM</p>
+                  <p class="autosaved">Auto-Saved at 5:20 PM</p>
                 </div>
-                <i class="fa-regular fa-message" style="color: #b197fc"></i>
+                <i class="fa-regular fa-message" style="color: #97fcb9"></i>
               </div>
               <div class="editor-container">
                 <div id="lineNumbers"><p>1</p></div>
@@ -122,23 +139,35 @@
               </div>
               <div class="codeRunner">
                 <button onclick="runCode()">Run Code</button>
-                <button onclick="revertCode()">Revert To Previous</button>
               </div>
 
               <pre id="output"></pre>
             </div>
-            <div class="changes"></div>
+            <div class="changes">
+              <div class="snapHeader">Changes</div>
+              <div class="prevVersion">
+                <p>Previous Version</p>
+                <div class="codeblocks"></div>
+              </div>
+              <div class="currVersion">
+                <p>Current Version</p>
+                <div class="codeblocks"></div>
+              </div>
+            </div>
           </div>
         </div>
-        <!-- <div class="pages task" id="1">
-          <h1>Task Management</h1>
+        <div class="pages task" id="1">
+          <div class="header">
+            <h2>Task Management</h2>
+            <button id="1">Close Page</button>
+          </div>
         </div>
         <div class="pages timer" id="2">
           <h1>Pomodoro Timer</h1>
         </div>
         <div class="pages quotes" id="3">
           <h1>Daily Quotes</h1>
-        </div> -->
+        </div>
       </div>
       <div class="signupForm">
         <form id="profileForm">

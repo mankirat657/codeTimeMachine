@@ -11,9 +11,9 @@
   /* Background colors */
   --primary: #0a0a0f;
   --secondary: #121220;
-  --ternary: #1a1a2e;
-  --ternarySec: #0e0e1a;
-  --ternaryTer: #32325d;
+  --ternary: #1a2e1d;
+  --ternarySec: #0e1a0f;
+  --ternaryTer: #325d36;
   --glassEffect: rgba(255, 255, 255, 0.05);
 
   /* Accent colors */
@@ -26,6 +26,7 @@
   --textSecondary: #b0b0d0;
   --textHighlight: #4fff64;
   --textDanger: #ff0000;
+  --textDeducted: #7d000096;
 
   /* Border colors */
   --border-primary: rgba(79, 255, 94, 0.2);
@@ -439,7 +440,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 99999999;
 }
 
 .hidden {
@@ -582,7 +583,7 @@ main {
   scale: 1.1;
 }
 .pages {
-  display: block;
+  display: none;
   width: 100%;
   height: 100%;
   background: var(--primary);
@@ -727,7 +728,7 @@ h5 {
   outline: none;
   resize: none;
   background: #0f0f0f;
-  color: #fff;
+  color: var(--textSecondary);
   font-family: monospace;
 
   font-size: 0.875rem;
@@ -758,7 +759,154 @@ h5 {
   align-items: center;
   padding: var(--space-xs);
   background-color: var(--ternaryTer);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+.snapshots .snapTimings:hover {
+  background-color: var(--ternary);
+  transition: all 0.2s ease-in-out;
 }
 .snapshots .snapTimings p {
   font-size: 0.8rem;
+  pointer-events: none;
+}
+.prevVersion p {
+  padding: var(--space-xs);
+  font-size: 0.8rem;
+}
+.currVersion p {
+  padding: var(--space-xs);
+  font-size: 0.8rem;
+}
+.codeblocks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xsx);
+  height: 32vh;
+  overflow: auto;
+  border-bottom: 2px solid var(--ternaryTer);
+}
+.codeblocks::-webkit-scrollbar-thumb {
+  background-color: var(--ternary);
+}
+.code {
+  padding: var(--space-xs);
+  background-color: var(--ternaryTer);
+  color: var(--textSecondary);
+}
+.latCode {
+  padding: var(--space-xs);
+  background-color: var(--accent-glow);
+  color: var(--accent-primary);
+}
+.deductedCode {
+  padding: var(--space-xs);
+  background-color: var(--textDeducted);
+  color: var(--textDanger);
+}
+.currVersion .codeblocks {
+  border: none;
+}
+.showCurrentCode {
+  position: fixed;
+  z-index: 9999;
+  display: none;
+  width: max-content;
+  max-width: 420px;
+
+  padding: var(--space-s) var(--space-m);
+
+  background: linear-gradient(
+    180deg,
+    var(--glassEffect),
+    rgba(255, 255, 255, 0.02)
+  );
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  border-radius: var(--rounded-l);
+  border: 1px solid var(--border-primary);
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--border-primary),
+    0 0 18px var(--accent-glow);
+
+  color: var(--textPrimary);
+
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: 1.6;
+
+  transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
+}
+
+.showCurrentCode ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.showCurrentCode li {
+  padding: 0;
+  white-space: pre;
+
+  color: var(--textSecondary);
+}
+
+.showCurrentCode li::before {
+  content: "›";
+  margin-right: var(--space-xs);
+  color: var(--accent-secondary);
+  opacity: 0.6;
+}
+.snapshotContextMenu {
+  position: fixed;
+  z-index: 10000;
+
+  min-width: 160px;
+  padding: var(--space-xs);
+
+  background: var(--glassEffect);
+  backdrop-filter: blur(5px);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--rounded-s);
+
+  backdrop-filter: blur(6px);
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55), 0 0 12px var(--accent-glow);
+
+  display: none;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.snapshotContextMenu button {
+  all: unset;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+
+  padding: var(--space-xs) var(--space-s);
+  border-radius: var(--rounded-xs);
+
+  color: var(--textSecondary);
+  font-size: 0.85rem;
+}
+
+.snapshotContextMenu button i {
+  color: var(--accent-secondary);
+  font-size: 0.85rem;
+}
+
+.snapshotContextMenu button:hover {
+  background: var(--glassEffect);
+  color: var(--textPrimary);
+
+  backdrop-filter: blur(6px);
+}
+
+.snapshotContextMenu button[data-action="delete"]:hover {
+  color: var(--textDanger);
 }
