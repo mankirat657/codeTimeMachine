@@ -14,6 +14,8 @@
   --ternary: #1a2e1d;
   --ternarySec: #0e1a0f;
   --ternaryTer: #325d36;
+  --fourthBackground: #262626;
+  --todoPrimaryBackground: #1f1f1f;
   --glassEffect: rgba(255, 255, 255, 0.05);
 
   /* Accent colors */
@@ -31,6 +33,7 @@
   /* Border colors */
   --border-primary: rgba(79, 255, 94, 0.2);
   --border-focus: rgba(79, 255, 111, 0.6);
+  --todoborder: #3d3d3d;
 
   /* Spacings */
   --space-xsx: 0.3rem;
@@ -909,4 +912,408 @@ h5 {
 
 .snapshotContextMenu button[data-action="delete"]:hover {
   color: var(--textDanger);
+}
+.taskSecDivider {
+  display: flex;
+  height: 89%;
+}
+.todoSidebar {
+  width: 20vw;
+  background-color: var(--fourthBackground);
+  position: relative;
+}
+.taskDisplay {
+  padding: var(--space-l) var(--space-3xl);
+  width: 80vw;
+  background-color: var(--todoPrimaryBackground);
+}
+.resizeHandle {
+  position: absolute;
+  top: 50%;
+  right: -9%;
+  transform: translate(0%, -50%);
+  background-color: var(--todoPrimaryBackground);
+  border: 2px solid var(--fourthBackground);
+  padding: var(--space-xs);
+  border-radius: 100%;
+  cursor: col-resize;
+}
+/* Todoist-like sidebar inside task page */
+.todoSidebar {
+  height: 100%;
+  padding: var(--space-m) var(--space-s);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  color: var(--textPrimary);
+  font-size: 0.9rem;
+}
+
+/* User section */
+.todoSidebar-user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-m);
+}
+
+.todoSidebar-user .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid var(--border-primary);
+}
+
+.todoSidebar-user .avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.todoSidebar-user .user-text {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.todoSidebar-user .user-name {
+  font-size: 0.85rem;
+}
+
+.todoSidebar-user i {
+  font-size: 0.9rem;
+  color: var(--textSecondary);
+}
+
+/* Generic button style */
+.todoSidebar-add,
+.todoSidebar-item {
+  width: 100%;
+  border: none;
+  outline: none;
+  background-color: var(--todoPrimaryBackground) !important;
+  color: var(--textPrimary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  padding: var(--space-xs) var(--space-xs);
+  border-radius: var(--rounded-l);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.todoSidebar-add:hover,
+.todoSidebar-item:hover {
+  background-color: var(--glassEffect);
+  transform: translateY(-1px);
+}
+
+/* Add task button */
+.todoSidebar-add {
+  color: var(--accent-glow);
+  font-weight: 600;
+  background-color: var(--todoPrimaryBackground) !important;
+  margin-bottom: var(--space-xs);
+}
+
+.todoSidebar-add .add-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: var(--accent-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ternarySec);
+  font-size: 0.85rem;
+}
+
+/* Sidebar items */
+.todoSidebar-item .icon {
+  width: 22px;
+  display: flex;
+  justify-content: center;
+  color: var(--textSecondary);
+  font-size: 0.9rem;
+}
+
+.todoSidebar-item .label {
+  flex: 1;
+  font-size: 0.88rem;
+}
+
+/* Active inbox */
+.todoSidebar-item.active {
+  background-color: var(--textDeducted);
+}
+
+.todoSidebar-item.active .icon i {
+  color: var(--textPrimary);
+}
+
+/* Counts */
+.todoSidebar-item .count {
+  font-size: 0.8rem;
+  color: var(--textSecondary);
+}
+
+.todoSidebar-item .count.today {
+  color: var(--textDanger);
+}
+
+/* Section title */
+.todoSidebar-sectionTitle {
+  margin-top: var(--space-m);
+  margin-bottom: var(--space-xs);
+  padding: 0 var(--space-xs);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--textSecondary);
+}
+
+/* Project item */
+.todoSidebar-item.project .icon i {
+  color: var(--accent-secondary);
+}
+.addTaskModal {
+  width: fit-content;
+  height: fit-content;
+  padding: var(--space-m) var(--space-s);
+  background-color: var(--todoPrimaryBackground);
+  backdrop-filter: blur(5px);
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px,
+    rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+    rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+  border-radius: var(--rounded-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  border: 1px solid var(--todoborder);
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  transform: translate(-50%, -30%);
+  scale: 0;
+  transition: all 0.3s ease-in-out;
+}
+.input {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-l);
+}
+.input input {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  font-size: 1.5rem;
+  color: var(--textSecondary);
+}
+.input label {
+  font-size: 0.7rem;
+  background-color: var(--ternaryTer);
+  color: var(--textHighlight);
+  padding: var(--space-xsx) var(--space-xs);
+  border-radius: var(--rounded-xs);
+}
+.description input {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: var(--textSecondary);
+}
+.features {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  border-bottom: 1px solid var(--todoborder);
+  padding-bottom: var(--space-s);
+}
+.features .feat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.8rem;
+  border: 1px solid var(--todoborder);
+  padding: var(--space-xs);
+  border-radius: var(--rounded-xs);
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+.features .feat p input {
+  background-color: transparent;
+  border: none;
+  color: var(--textSecondary);
+  outline: none;
+}
+
+.features .feat:hover {
+  background-color: var(--todoborder);
+  transition: all 0.2s ease-in-out;
+}
+.inbox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.inbox .feat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  font-size: 0.8rem;
+  padding: var(--space-xs);
+  border-radius: var(--rounded-xs);
+  transition: all 0.2s ease-in-out;
+  position: relative;
+  cursor: pointer;
+}
+.inbox .feat:hover {
+  background-color: var(--todoborder);
+  transition: all 0.2s ease-in-out;
+}
+.featBtn :nth-child(1) {
+  background-color: var(--todoborder);
+  color: var(--textSecondary);
+}
+.featBtn :nth-child(2) {
+  background-color: var(--textDeducted);
+  color: var(--textDanger);
+}
+.priority {
+  position: relative;
+}
+.priorities {
+  position: absolute;
+  border-radius: var(--space-s);
+  background-color: var(--fourthBackground);
+  display: flex;
+  border: 1px solid var(--todoborder);
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-s);
+  height: fit-content;
+  width: 10vw;
+  display: none;
+}
+.priorities .prior {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xsx) var(--space-xs);
+  transition: 0.3s ease-in-out;
+  border-radius: var(--rounded-xs);
+}
+.priorities .prior:hover {
+  background-color: var(--todoborder);
+  transition: 0.3s ease-in-out;
+}
+.desc {
+  width: 100%;
+}
+.todo-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xsx);
+  background: var(--fourthBackground);
+  padding: var(--space-s) var(--space-m);
+  border-radius: var(--rounded-xs);
+  border: 1px solid var(--todoborder);
+  box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px,
+    rgba(0, 0, 0, 0.22) 0px 10px 10px;
+}
+
+.todo-status {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: transparent !important;
+  color: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.todo-status i {
+  font-size: 0.7rem;
+  color: var(--textHighlight);
+}
+
+/* main content */
+
+.todo-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.todo-title {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--textPrimary);
+}
+.inserTitle {
+  padding-bottom: var(--space-s);
+}
+.todo-actions {
+  display: flex;
+
+  align-items: center;
+  gap: var(--space-xs);
+  display: none;
+  position: absolute;
+  right: 1%;
+  top: 1%;
+}
+.icon-btn {
+  border: none;
+  background: transparent !important;
+  color: var(--textPrimary);
+  opacity: 0.7;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.icon-btn:hover {
+  opacity: 1;
+}
+
+.todo-subtitle {
+  margin-top: var(--space-xsx);
+  font-size: 0.88rem;
+  color: var(--textSecondary);
+}
+
+.todo-date-wrap {
+  margin-top: var(--space-xs);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xsx);
+  font-size: 0.8rem;
+  color: var(--textDanger);
+}
+.todo-date-flag {
+  margin-top: var(--space-xs);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xsx);
+  font-size: 0.8rem;
+}
+.todo-date-wrap i {
+  font-size: 0.8rem;
+}
+
+.todo-date {
+  color: var(--textDanger);
+}
+.todocontainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
 }

@@ -161,6 +161,163 @@
             <h2>Task Management</h2>
             <button id="1">Close Page</button>
           </div>
+          <div class="taskSecDivider">
+            <div class="todoSidebar">
+              <!-- Top user / brand -->
+              <div class="todoSidebar-user">
+                <div class="avatar">
+                  <img src="https://i.pravatar.cc/64" alt="User" />
+                </div>
+                <div class="user-text">
+                  <p class="user-name">Manki...</p>
+                  <i class="fa-regular fa-bell"></i>
+                  <i class="fa-regular fa-square"></i>
+                </div>
+              </div>
+
+              <!-- Add task -->
+              <button class="todoSidebar-add">
+                <span class="add-icon"><i class="fa-solid fa-plus"></i></span>
+                <span>Add task</span>
+              </button>
+
+              <!-- Search -->
+              <button class="todoSidebar-item">
+                <span class="icon"
+                  ><i class="fa-solid fa-magnifying-glass"></i
+                ></span>
+                <span class="label">Search</span>
+              </button>
+
+              <!-- Inbox (active) -->
+              <button class="todoSidebar-item active clickedItem">
+                <span class="icon"><i class="fa-solid fa-inbox"></i></span>
+                <span class="label">Inbox</span>
+                <span class="count">2</span>
+              </button>
+
+              <!-- Today -->
+              <button class="todoSidebar-item clickedItem">
+                <span class="icon"><i class="fa-regular fa-calendar"></i></span>
+                <span class="label">Today</span>
+                <span class="count today">4</span>
+              </button>
+
+              <!-- Upcoming -->
+              <button class="todoSidebar-item clickedItem">
+                <span class="icon"
+                  ><i class="fa-regular fa-calendar-days"></i
+                ></span>
+                <span class="label">Upcoming</span>
+              </button>
+
+              <!-- Filters & Labels -->
+              <button class="todoSidebar-item clickedItem">
+                <span class="icon"
+                  ><i class="fa-solid fa-table-cells-large"></i
+                ></span>
+                <span class="label">Filters &amp; Labels</span>
+              </button>
+
+              <!-- Completed -->
+              <button class="todoSidebar-item clickedItem">
+                <span class="icon"
+                  ><i class="fa-regular fa-circle-check"></i
+                ></span>
+                <span class="label">Completed</span>
+              </button>
+
+              <!-- Projects -->
+              <div class="todoSidebar-sectionTitle clickedItem">
+                My Projects
+              </div>
+
+              <button class="todoSidebar-item project">
+                <span class="icon"><i class="fa-solid fa-hashtag"></i></span>
+                <span class="label">Getting Started 👋</span>
+                <span class="count">15</span>
+              </button>
+
+              <div class="resizeHandle">
+                <i
+                  class="fa-solid fa-arrows-left-right"
+                  style="color: #63e6be"
+                ></i>
+              </div>
+            </div>
+
+            <div class="taskDisplay">
+              <h1 class="inserTitle"></h1>
+              <div class="todocontainer"></div>
+              <div class="addTaskModal">
+                <div class="input">
+                  <input
+                    type="text"
+                    class="title"
+                    placeholder="Organize family photos Sunday"
+                  />
+                  <label for="">DICTATE</label>
+                </div>
+                <div class="description">
+                  <input class="desc" type="text" placeholder="Description" />
+                </div>
+                <div class="features">
+                  <div class="feat">
+                    <p>
+                      <input type="date" class="mydate" placeholder="Date" />
+                    </p>
+                    <i
+                      class="fa-regular fa-calendar"
+                      style="color: #63e6be"
+                    ></i>
+                  </div>
+                  <div class="feat priority">
+                    <i
+                      class="fa-solid fa-circle-exclamation"
+                      style="color: #63e6be"
+                    ></i>
+                    <p id="prior">Priority</p>
+                    <div class="priorities">
+                      <div class="prior priOne">
+                        <i class="fa-solid fa-flag" style="color: #ff5900"></i>
+                        <p>Priority 1</p>
+                      </div>
+                      <div class="prior priTwo">
+                        <i class="fa-solid fa-flag" style="color: #ffd43b"></i>
+                        <p>Priority 2</p>
+                      </div>
+                      <div class="prior priThree">
+                        <i class="fa-solid fa-flag" style="color: #74c0fc"></i>
+                        <p>Priority 3</p>
+                      </div>
+                      <div class="prior priFourth">
+                        <i class="fa-solid fa-flag" style="color: #ff0000"></i>
+                        <p>Priority 4</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="feat">
+                    <i class="fa-solid fa-stopwatch" style="color: #63e6be"></i>
+                    <p>Reminders</p>
+                  </div>
+                </div>
+                <div class="inbox">
+                  <div class="feat">
+                    <i class="fa-solid fa-inbox" style="color: #63e6be"></i>
+                    <p class="inboxText">Inbox</p>
+                    <i
+                      class="fa-solid fa-angle-down"
+                      style="color: #63e6be"
+                    ></i>
+                  </div>
+                  <div class="featBtn">
+                    <button id="cancel">Cancel</button>
+                    <button id="addTask">Add Task</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="pages timer" id="2">
           <h1>Pomodoro Timer</h1>

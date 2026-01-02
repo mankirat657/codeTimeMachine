@@ -5,6 +5,7 @@ const overlay = document.querySelector("#loadingOverlay");
 const contentWrapper = document.querySelector("#contentWrapper");
 const textarea = document.getElementById("codeEditor");
 const lineNumbers = document.getElementById("lineNumbers");
+let data = "";
 let prevVerCodeBLock = document.querySelector(".prevVersion .codeblocks");
 let currVerCodeBLock = document.querySelector(".currVersion .codeblocks");
 let username;
@@ -20,6 +21,7 @@ let autosaved = document.querySelectorAll(".autosaved");
 let revertBtn = document.querySelector(".revertBtn");
 let clicked = true;
 let exportBtn = document.querySelector("#export");
+let todo;
 /*utilFunction */
 function usernameStrenghtChecker(username) {
   if (username.length < 3) {
@@ -82,6 +84,10 @@ function initDB() {
         keyPath: "id",
         autoIncrement: true,
       });
+      db.createObjectStore("todos", {
+        keyPath: "id",
+        autoIncrement: true,
+      });
     };
 
     request.onsuccess = function (event) {
@@ -130,6 +136,7 @@ async function fetchUserProfileData(githubId) {
 
     const data = await response.json();
     console.log(data);
+    dipslayProfileInfo(data);
     form.remove();
     contentWrapper.style.display = "block";
     return data;
@@ -138,6 +145,17 @@ async function fetchUserProfileData(githubId) {
   } finally {
     hideLoader();
   }
+}
+function getTodos() {
+  return new Promise((resolve, reject) => {
+    if (!db) reject("Db not ready");
+    const transaction = db.transaction("todos", "readonly");
+    const store = transaction.objectStore("todos");
+    const request = store.getAll();
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject("Failed to fetch users");
+  });
 }
 function getUser() {
   return new Promise((resolve, reject) => {
@@ -154,7 +172,9 @@ document.addEventListener("DOMContentLoaded", async (e) => {
   try {
     await initDB();
     user = await getUser();
+    todo = await getTodos();
     renderUsers(user);
+    displayTodo(todo);
 
     getSnapshots();
     if (textarea.value.trim() !== "") {
@@ -573,3 +593,203 @@ function exportSnapshot(code) {
   const filename = `code_snapshot_${time}.js`;
   exportCodeToFile(code, filename);
 }
+/************code time machine coding end here */
+
+/*from here 2nd moudle advance task manager start */
+let sidebar = document.querySelector(".todoSidebar");
+let resizeHandler = document.querySelector(".resizeHandle");
+let min = 250;
+let max = 400;
+let isResize = false;
+let userName = document.querySelector(".user-name");
+let avatarImage = document.querySelector(".avatar img");
+let addTaskBtn = document.querySelector(".todoSidebar-add");
+let addTaskModal = document.querySelector(".addTaskModal");
+let prior = document.querySelector("#prior");
+let priority = document.querySelector(".priority");
+let priordisp = document.querySelector(".priorities");
+let taskBtn = document.querySelector("#addTask");
+let title = document.querySelector(".title");
+let description = document.querySelector(".desc");
+let date = document.querySelector(".mydate");
+let flag = "";
+let inboxText = document.querySelector(".inboxText");
+let check = "";
+let currentTodo;
+let inserTitle = document.querySelector(".inserTitle");
+let todoActions = document.querySelector(".todo-actions");
+let taskDisplay = document.querySelector(".taskDisplay");
+let todoContainer = document.querySelector(".todocontainer");
+console.log(priordisp);
+
+//sidebar resizing code
+function updateSidbar() {
+  resizeHandler.addEventListener("mousedown", function (e) {
+    isResize = true;
+  });
+  document.addEventListener("mousemove", function (e) {
+    if (!isResize) return;
+
+    if (e.clientX <= min) return;
+    if (e.clientX >= max) return;
+    sidebar.style.width = e.clientX + "px";
+  });
+  document.addEventListener("mouseup", function (e) {
+    isResize = false;
+  });
+}
+updateSidbar();
+function dipslayProfileInfo(user) {
+  console.log(user);
+  userName.textContent = user?.login;
+  avatarImage.src = user?.avatar_url;
+}
+function displayAddTaskModal() {
+  addTaskBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    addTaskModal.style.scale = "1";
+  });
+
+  addTaskModal.addEventListener("click", function (e) {
+    e.stopPropagation();
+    priordisp.style.display = "none";
+  });
+
+  prior.addEventListener("click", function (e) {
+    e.stopPropagation();
+
+    const parentRect = priority.getBoundingClientRect();
+    const rect = prior.getBoundingClientRect();
+
+    priordisp.style.display = "flex";
+    priordisp.style.top = rect.bottom - parentRect.top + "px";
+    priordisp.style.left = rect.left - parentRect.left + "px";
+  });
+
+  // Click outside modal → close modal + priority
+  document.body.addEventListener("click", function () {
+    addTaskModal.style.scale = "0";
+    priordisp.style.display = "none";
+  });
+}
+
+displayAddTaskModal();
+function saveTask() {
+  console.log(
+    title.value,
+    description.value,
+    flag,
+    date.value,
+    inboxText.textContent
+  );
+  if (!db) {
+    console.error("DB not ready yet");
+    return;
+  }
+
+  const transaction = db.transaction("todos", "readwrite");
+  const store = transaction.objectStore("todos");
+
+  store.add({
+    title: title.value,
+    description: description.value,
+    priorities: flag,
+    taskCompletionDate: date.value,
+    WhereToPut: inboxText.textContent,
+  });
+
+  transaction.oncomplete = () => {
+    console.log("todos saved");
+  };
+
+  transaction.onerror = () => {
+    console.error("Transaction failed");
+  };
+}
+
+taskBtn.addEventListener("click", saveTask);
+priordisp.addEventListener("click", function (e) {
+  const priorItem = e.target.closest(".prior");
+  if (!priorItem) return;
+
+  flag = priorItem.children[1].textContent;
+});
+function displayTodo(todo, check) {
+  console.log(todo);
+  console.log(check);
+  switch (check) {
+    case "Inbox":
+      currentTodo = todo.filter((f) => f?.WhereToPut === check);
+      inserTitle.textContent = "Inbox";
+      break;
+  }
+  todoContainer.innerHTML = "";
+  if (Array.isArray(currentTodo)) {
+    currentTodo.forEach((item, index) => {
+      const todoRow = document.createElement("div");
+      todoRow.className = "todo-row";
+      todoRow.innerHTML = `
+        <button class="todo-status">
+          <i class="fa-regular fa-circle"></i>
+        </button>
+        <div class="todo-main">
+          <div class="todo-top">
+            <p class="todo-title">${item.title}</p>
+            <div class="todo-actions">
+              <button class="icon-btn">
+                <i class="fa-regular fa-pen-to-square"></i>
+              </button>
+              <button class="icon-btn">
+                <i class="fa-regular fa-message"></i>
+              </button>
+              <button class="icon-btn">
+                <i class="fa-solid fa-ellipsis"></i>
+              </button>
+            </div>
+          </div>
+          <p class="todo-subtitle">${item.description}</p>
+          <div class="todo-date-wrap">
+            <i class="fa-regular fa-calendar"></i>
+            <span class="todo-date">${item.taskCompletionDate}</span>
+            </div>
+            <div class="todo-date-flag">
+  ${
+    item?.priorities
+      ? `<p>
+      <i class="fa-solid fa-flag" style="color: ${
+        item.priorities === "Priority 1"
+          ? "#ff5900"
+          : item.priorities === "Priority 2"
+          ? "#ff5900"
+          : item.priorities === "Priority 3"
+          ? "#74c0fc"
+          : "#ff0000"
+      }"></i> ${item.priorities}
+    </p>`
+      : ""
+  }
+</div>
+
+        </div>
+      `;
+      todoRow.addEventListener("mouseenter", () => {
+        todoRow.querySelector(".todo-actions").style.display = "flex";
+      });
+
+      todoRow.addEventListener("mouseleave", () => {
+        todoRow.querySelector(".todo-actions").style.display = "none";
+      });
+      todoContainer.appendChild(todoRow);
+    });
+  }
+  console.log(currentTodo);
+}
+sidebar.addEventListener("click", function (e) {
+  const clickedItem = e.target.closest(".clickedItem");
+  if (!clickedItem) {
+    return;
+  }
+  check = clickedItem.children[1].textContent;
+  if (!check) return;
+  displayTodo(todo, check);
+});
