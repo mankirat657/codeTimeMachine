@@ -21,7 +21,7 @@ let autosaved = document.querySelectorAll(".autosaved");
 let revertBtn = document.querySelector(".revertBtn");
 let clicked = true;
 let exportBtn = document.querySelector("#export");
-let todo;
+let todo = [];
 /*utilFunction */
 function usernameStrenghtChecker(username) {
   if (username.length < 3) {
@@ -148,15 +148,17 @@ async function fetchUserProfileData(githubId) {
 }
 function getTodos() {
   return new Promise((resolve, reject) => {
-    if (!db) reject("Db not ready");
+    if (!db) return reject("DB not ready");
+
     const transaction = db.transaction("todos", "readonly");
     const store = transaction.objectStore("todos");
     const request = store.getAll();
 
     request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject("Failed to fetch users");
+    request.onerror = () => reject("Failed to fetch todos");
   });
 }
+
 function getUser() {
   return new Promise((resolve, reject) => {
     if (!db) reject("Db not ready");
@@ -174,7 +176,7 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     user = await getUser();
     todo = await getTodos();
     renderUsers(user);
-    displayTodo(todo);
+    displayTodo(todo, check);
 
     getSnapshots();
     if (textarea.value.trim() !== "") {
@@ -607,19 +609,26 @@ let addTaskBtn = document.querySelector(".todoSidebar-add");
 let addTaskModal = document.querySelector(".addTaskModal");
 let prior = document.querySelector("#prior");
 let priority = document.querySelector(".priority");
+let locationes = document.querySelector(".location");
 let priordisp = document.querySelector(".priorities");
+let whereToPut = document.querySelector(".whereToPut");
 let taskBtn = document.querySelector("#addTask");
 let title = document.querySelector(".title");
 let description = document.querySelector(".desc");
 let date = document.querySelector(".mydate");
 let flag = "";
 let inboxText = document.querySelector(".inboxText");
-let check = "";
+let check = "Inbox";
 let currentTodo;
 let inserTitle = document.querySelector(".inserTitle");
 let todoActions = document.querySelector(".todo-actions");
 let taskDisplay = document.querySelector(".taskDisplay");
 let todoContainer = document.querySelector(".todocontainer");
+let editTodo;
+let editingTodoId = null;
+let cancelTask = document.querySelector("#cancelTask")
+let storageDesc;
+let checkedTodo;
 console.log(priordisp);
 
 //sidebar resizing code
@@ -641,10 +650,10 @@ function updateSidbar() {
 updateSidbar();
 function dipslayProfileInfo(user) {
   console.log(user);
-  userName.textContent = user?.login;
+  userName.textContent = user?.login || "userOne";
   avatarImage.src = user?.avatar_url;
 }
-function displayAddTaskModal() {
+function displayAddTaskModal(title, description, date, prioritytwo, storageLocation) {
   addTaskBtn.addEventListener("click", function (e) {
     e.stopPropagation();
     addTaskModal.style.scale = "1";
@@ -653,6 +662,7 @@ function displayAddTaskModal() {
   addTaskModal.addEventListener("click", function (e) {
     e.stopPropagation();
     priordisp.style.display = "none";
+    whereToPut.style.display = "none";
   });
 
   prior.addEventListener("click", function (e) {
@@ -665,55 +675,91 @@ function displayAddTaskModal() {
     priordisp.style.top = rect.bottom - parentRect.top + "px";
     priordisp.style.left = rect.left - parentRect.left + "px";
   });
+  inboxText.addEventListener("click", function (e) {
+    e.stopPropagation();
+    const secondParentRect = locationes.getBoundingClientRect();
+    const secondRect = inboxText.getBoundingClientRect();
+    whereToPut.style.display = "flex";
+    whereToPut.style.top = secondRect.bottom - secondParentRect.top + "px";
+    whereToPut.style.left = secondRect.left - secondParentRect.left + "px";
+  });
+  cancelTask.addEventListener("click", (e) => {
+    addTaskModal.style.scale = "0";
 
+    addTaskModal.children[0].childNodes[1].value = ""
+    addTaskModal.children[1].childNodes[1].value = ""
+    addTaskModal.children[2].childNodes[1].childNodes[1].childNodes[1].value = ""
+  })
   // Click outside modal → close modal + priority
   document.body.addEventListener("click", function () {
     addTaskModal.style.scale = "0";
     priordisp.style.display = "none";
+    whereToPut.style.display = "none";
+    addTaskModal.children[0].childNodes[1].value = ""
+    addTaskModal.children[1].childNodes[1].value = ""
+    addTaskModal.children[2].childNodes[1].childNodes[1].childNodes[1].value = ""
   });
+  if (title || description || date || prioritytwo || storageLocation) {
+    console.log(addTaskModal.children)
+    addTaskModal.children[0].childNodes[1].value = title;
+    addTaskModal.children[1].childNodes[1].value = description;
+    addTaskModal.children[2].childNodes[1].childNodes[1].childNodes[1].value = date;
+    inboxText.textContent = storageLocation
+    flag = prioritytwo;
+    prior.textContent = prioritytwo;
+
+  }
 }
 
 displayAddTaskModal();
 function saveTask() {
-  console.log(
-    title.value,
-    description.value,
-    flag,
-    date.value,
-    inboxText.textContent
-  );
-  if (!db) {
-    console.error("DB not ready yet");
-    return;
-  }
+  if (!db) return;
 
   const transaction = db.transaction("todos", "readwrite");
   const store = transaction.objectStore("todos");
 
-  store.add({
+  const taskData = {
     title: title.value,
     description: description.value,
     priorities: flag,
     taskCompletionDate: date.value,
     WhereToPut: inboxText.textContent,
-  });
-
-  transaction.oncomplete = () => {
-    console.log("todos saved");
   };
 
-  transaction.onerror = () => {
-    console.error("Transaction failed");
+  if (editingTodoId !== null) {
+    taskData.id = editingTodoId;
+    store.put(taskData);
+  } else {
+    store.add(taskData);
+  }
+
+  transaction.oncomplete = async () => {
+    editingTodoId = null;
+    addTaskModal.style.scale = "0";
+
+    todo = await getTodos();
+    displayTodo(todo, check);
   };
 }
+
+
 
 taskBtn.addEventListener("click", saveTask);
 priordisp.addEventListener("click", function (e) {
   const priorItem = e.target.closest(".prior");
   if (!priorItem) return;
+  console.log(priorItem);
 
   flag = priorItem.children[1].textContent;
+  prior.textContent = flag
 });
+whereToPut.addEventListener("click", function (e) {
+  const storageType = e.target.closest(".storage");
+  if (!storageType) return;
+  storageDesc = storageType.children[1].textContent;
+  console.log(storageDesc);
+  inboxText.textContent = storageDesc;
+})
 function displayTodo(todo, check) {
   console.log(todo);
   console.log(check);
@@ -722,6 +768,18 @@ function displayTodo(todo, check) {
       currentTodo = todo.filter((f) => f?.WhereToPut === check);
       inserTitle.textContent = "Inbox";
       break;
+    case "Upcoming":
+      currentTodo = todo.filter((f) => f?.WhereToPut === check);
+      inserTitle.textContent = "Upcoming";
+      break;
+    case "Today":
+      currentTodo = todo.filter((f) => f?.WhereToPut === check);
+      inserTitle.textContent = "Today";
+      break;
+    case "Completed":
+      currentTodo = todo.filter((f) => f?.WhereToPut === check);
+      inserTitle.textContent = "Completed";
+      break;
   }
   todoContainer.innerHTML = "";
   if (Array.isArray(currentTodo)) {
@@ -729,14 +787,18 @@ function displayTodo(todo, check) {
       const todoRow = document.createElement("div");
       todoRow.className = "todo-row";
       todoRow.innerHTML = `
-        <button class="todo-status">
-          <i class="fa-regular fa-circle"></i>
-        </button>
+     <button class="todo-status" id="checked">
+  ${item?.WhereToPut === "Completed"
+          ? '<i class="fa-solid fa-circle" style="color: #63E6BE;"></i>'
+          : '<i class="fa-regular fa-circle" id="checked"></i>'
+        }
+</button>
+
         <div class="todo-main">
           <div class="todo-top">
             <p class="todo-title">${item.title}</p>
             <div class="todo-actions">
-              <button class="icon-btn">
+              <button class="icon-btn" id="editTodo">
                 <i class="fa-regular fa-pen-to-square"></i>
               </button>
               <button class="icon-btn">
@@ -753,25 +815,53 @@ function displayTodo(todo, check) {
             <span class="todo-date">${item.taskCompletionDate}</span>
             </div>
             <div class="todo-date-flag">
-  ${
-    item?.priorities
-      ? `<p>
-      <i class="fa-solid fa-flag" style="color: ${
-        item.priorities === "Priority 1"
-          ? "#ff5900"
-          : item.priorities === "Priority 2"
-          ? "#ff5900"
-          : item.priorities === "Priority 3"
-          ? "#74c0fc"
-          : "#ff0000"
-      }"></i> ${item.priorities}
+  ${item?.priorities
+          ? `<p>
+      <i class="fa-solid fa-flag" style="color: ${item.priorities === "Priority 1"
+            ? "#ff5900"
+            : item.priorities === "Priority 2"
+              ? "#ff5900"
+              : item.priorities === "Priority 3"
+                ? "#74c0fc"
+                : "#ff0000"
+          }"></i> ${item.priorities}
     </p>`
-      : ""
-  }
+          : ""
+        }
 </div>
-
+      
         </div>
       `;
+      editTodo = todoRow.querySelector("#editTodo");
+      checkedTodo = todoRow.querySelector("#checked");
+      editTodo.addEventListener("click", function (e) {
+        e.stopPropagation();
+
+        editingTodoId = item.id;
+        addTaskModal.style.scale = "1";
+
+        title.value = item.title;
+        description.value = item.description;
+        date.value = item.taskCompletionDate;
+        inboxText.textContent = item.WhereToPut;
+
+        flag = item.priorities;
+        prior.textContent = item.priorities || "Priority";
+      });
+      checkedTodo.addEventListener("click", function (e) {
+        e.stopPropagation();
+        
+        editingTodoId = item.id;
+        title.value = item.title;
+        description.value = item.description;
+        date.value = item.taskCompletionDate;
+        inboxText.textContent = "Completed";
+        flag = item.priorities;
+        prior.textContent = item.priorities || "Priority";
+
+        console.log("clicked")
+        saveTask()
+      })
       todoRow.addEventListener("mouseenter", () => {
         todoRow.querySelector(".todo-actions").style.display = "flex";
       });
@@ -786,10 +876,9 @@ function displayTodo(todo, check) {
 }
 sidebar.addEventListener("click", function (e) {
   const clickedItem = e.target.closest(".clickedItem");
-  if (!clickedItem) {
-    return;
-  }
+  if (!clickedItem) return;
+
   check = clickedItem.children[1].textContent;
-  if (!check) return;
   displayTodo(todo, check);
 });
+

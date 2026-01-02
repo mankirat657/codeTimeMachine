@@ -1182,10 +1182,10 @@ h5 {
   background-color: var(--textDeducted);
   color: var(--textDanger);
 }
-.priority {
+.priority,.location {
   position: relative;
 }
-.priorities {
+.priorities,.whereToPut {
   position: absolute;
   border-radius: var(--space-s);
   background-color: var(--fourthBackground);
@@ -1197,8 +1197,9 @@ h5 {
   height: fit-content;
   width: 10vw;
   display: none;
+  z-index: 100;
 }
-.priorities .prior {
+.priorities .prior,.whereToPut .storage {
   display: flex;
   align-items: center;
   gap: var(--space-xs);
@@ -1206,7 +1207,7 @@ h5 {
   transition: 0.3s ease-in-out;
   border-radius: var(--rounded-xs);
 }
-.priorities .prior:hover {
+.priorities .prior:hover, .whereToPut .storage:hover {
   background-color: var(--todoborder);
   transition: 0.3s ease-in-out;
 }
