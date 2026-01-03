@@ -22,6 +22,8 @@ let revertBtn = document.querySelector(".revertBtn");
 let clicked = true;
 let exportBtn = document.querySelector("#export");
 let todo = [];
+let inboxvalue = null;
+let todayvalue = null;
 /*utilFunction */
 function usernameStrenghtChecker(username) {
   if (username.length < 3) {
@@ -176,9 +178,13 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     user = await getUser();
     todo = await getTodos();
     renderUsers(user);
-    displayTodo(todo, check);
-
     getSnapshots();
+    searchImplementation();
+    displayTodo(todo, check);
+    searchTodo(todo);
+    inboxvalue = inbox();
+    todayvalue = today();
+    displayCountLable(inboxvalue, todayvalue);
     if (textarea.value.trim() !== "") {
       runCode();
     }
@@ -626,9 +632,18 @@ let taskDisplay = document.querySelector(".taskDisplay");
 let todoContainer = document.querySelector(".todocontainer");
 let editTodo;
 let editingTodoId = null;
-let cancelTask = document.querySelector("#cancelTask")
+let cancelTask = document.querySelector("#cancelTask");
 let storageDesc;
 let checkedTodo;
+let currentItem;
+let deleteOverlay = document.querySelector(".delete-overlay");
+let deletebtn;
+let buttonDeletion = document.querySelector(".btn-deletion");
+let display = document.querySelector(".search-overlay");
+let searchBtn = document.querySelector(".search");
+let searchInput = document.querySelector(".search-input");
+let todayCount = document.querySelector(".todayCount");
+let inboxCount = document.querySelector(".inboxCount");
 console.log(priordisp);
 
 //sidebar resizing code
@@ -653,7 +668,13 @@ function dipslayProfileInfo(user) {
   userName.textContent = user?.login || "userOne";
   avatarImage.src = user?.avatar_url;
 }
-function displayAddTaskModal(title, description, date, prioritytwo, storageLocation) {
+function displayAddTaskModal(
+  title,
+  description,
+  date,
+  prioritytwo,
+  storageLocation
+) {
   addTaskBtn.addEventListener("click", function (e) {
     e.stopPropagation();
     addTaskModal.style.scale = "1";
@@ -686,28 +707,30 @@ function displayAddTaskModal(title, description, date, prioritytwo, storageLocat
   cancelTask.addEventListener("click", (e) => {
     addTaskModal.style.scale = "0";
 
-    addTaskModal.children[0].childNodes[1].value = ""
-    addTaskModal.children[1].childNodes[1].value = ""
-    addTaskModal.children[2].childNodes[1].childNodes[1].childNodes[1].value = ""
-  })
+    addTaskModal.children[0].childNodes[1].value = "";
+    addTaskModal.children[1].childNodes[1].value = "";
+    addTaskModal.children[2].childNodes[1].childNodes[1].childNodes[1].value =
+      "";
+  });
   // Click outside modal → close modal + priority
   document.body.addEventListener("click", function () {
     addTaskModal.style.scale = "0";
     priordisp.style.display = "none";
     whereToPut.style.display = "none";
-    addTaskModal.children[0].childNodes[1].value = ""
-    addTaskModal.children[1].childNodes[1].value = ""
-    addTaskModal.children[2].childNodes[1].childNodes[1].childNodes[1].value = ""
+    addTaskModal.children[0].childNodes[1].value = "";
+    addTaskModal.children[1].childNodes[1].value = "";
+    addTaskModal.children[2].childNodes[1].childNodes[1].childNodes[1].value =
+      "";
   });
   if (title || description || date || prioritytwo || storageLocation) {
-    console.log(addTaskModal.children)
+    console.log(addTaskModal.children);
     addTaskModal.children[0].childNodes[1].value = title;
     addTaskModal.children[1].childNodes[1].value = description;
-    addTaskModal.children[2].childNodes[1].childNodes[1].childNodes[1].value = date;
-    inboxText.textContent = storageLocation
+    addTaskModal.children[2].childNodes[1].childNodes[1].childNodes[1].value =
+      date;
+    inboxText.textContent = storageLocation;
     flag = prioritytwo;
     prior.textContent = prioritytwo;
-
   }
 }
 
@@ -742,8 +765,6 @@ function saveTask() {
   };
 }
 
-
-
 taskBtn.addEventListener("click", saveTask);
 priordisp.addEventListener("click", function (e) {
   const priorItem = e.target.closest(".prior");
@@ -751,7 +772,7 @@ priordisp.addEventListener("click", function (e) {
   console.log(priorItem);
 
   flag = priorItem.children[1].textContent;
-  prior.textContent = flag
+  prior.textContent = flag;
 });
 whereToPut.addEventListener("click", function (e) {
   const storageType = e.target.closest(".storage");
@@ -759,7 +780,7 @@ whereToPut.addEventListener("click", function (e) {
   storageDesc = storageType.children[1].textContent;
   console.log(storageDesc);
   inboxText.textContent = storageDesc;
-})
+});
 function displayTodo(todo, check) {
   console.log(todo);
   console.log(check);
@@ -783,15 +804,18 @@ function displayTodo(todo, check) {
   }
   todoContainer.innerHTML = "";
   if (Array.isArray(currentTodo)) {
-    currentTodo.forEach((item, index) => {
+    currentTodo.reverse().forEach((item, index) => {
       const todoRow = document.createElement("div");
       todoRow.className = "todo-row";
+      todoRow.setAttribute("draggable", "true");
+      todoRow.dataset.todoId = item.id;
       todoRow.innerHTML = `
      <button class="todo-status" id="checked">
-  ${item?.WhereToPut === "Completed"
-          ? '<i class="fa-solid fa-circle" style="color: #63E6BE;"></i>'
-          : '<i class="fa-regular fa-circle" id="checked"></i>'
-        }
+  ${
+    item?.WhereToPut === "Completed"
+      ? '<i class="fa-solid fa-circle" style="color: #63E6BE;"></i>'
+      : '<i class="fa-regular fa-circle" id="checked"></i>'
+  }
 </button>
 
         <div class="todo-main">
@@ -804,8 +828,8 @@ function displayTodo(todo, check) {
               <button class="icon-btn">
                 <i class="fa-regular fa-message"></i>
               </button>
-              <button class="icon-btn">
-                <i class="fa-solid fa-ellipsis"></i>
+              <button class="icon-btn deletebtn">
+               <i class="fa-solid fa-trash" style="color: #ff0033;"></i>
               </button>
             </div>
           </div>
@@ -815,25 +839,29 @@ function displayTodo(todo, check) {
             <span class="todo-date">${item.taskCompletionDate}</span>
             </div>
             <div class="todo-date-flag">
-  ${item?.priorities
-          ? `<p>
-      <i class="fa-solid fa-flag" style="color: ${item.priorities === "Priority 1"
-            ? "#ff5900"
-            : item.priorities === "Priority 2"
-              ? "#ff5900"
-              : item.priorities === "Priority 3"
-                ? "#74c0fc"
-                : "#ff0000"
-          }"></i> ${item.priorities}
+  ${
+    item?.priorities
+      ? `<p>
+      <i class="fa-solid fa-flag" style="color: ${
+        item.priorities === "Priority 1"
+          ? "#ff5900"
+          : item.priorities === "Priority 2"
+          ? "#ff5900"
+          : item.priorities === "Priority 3"
+          ? "#74c0fc"
+          : "#ff0000"
+      }"></i> ${item.priorities}
     </p>`
-          : ""
-        }
+      : ""
+  }
 </div>
       
         </div>
       `;
+
       editTodo = todoRow.querySelector("#editTodo");
       checkedTodo = todoRow.querySelector("#checked");
+      deletebtn = todoRow.querySelector(".deletebtn");
       editTodo.addEventListener("click", function (e) {
         e.stopPropagation();
 
@@ -850,7 +878,7 @@ function displayTodo(todo, check) {
       });
       checkedTodo.addEventListener("click", function (e) {
         e.stopPropagation();
-        
+
         editingTodoId = item.id;
         title.value = item.title;
         description.value = item.description;
@@ -859,9 +887,26 @@ function displayTodo(todo, check) {
         flag = item.priorities;
         prior.textContent = item.priorities || "Priority";
 
-        console.log("clicked")
-        saveTask()
-      })
+        console.log("clicked");
+        saveTask();
+      });
+      deletebtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        deleteOverlay.style.display = "flex";
+        window.pendingDeleteId = item.id;
+      });
+      buttonDeletion.addEventListener("click", async (e) => {
+        if (window.pendingDeleteId) {
+          await deleteTodo(window.pendingDeleteId);
+          delete window.pendingDeleteId; // Clear
+        }
+      });
+      deleteOverlay.addEventListener("click", (e) => {
+        if (e.target === deleteOverlay) {
+          deleteOverlay.style.display = "none";
+          delete window.pendingDeleteId;
+        }
+      });
       todoRow.addEventListener("mouseenter", () => {
         todoRow.querySelector(".todo-actions").style.display = "flex";
       });
@@ -871,6 +916,8 @@ function displayTodo(todo, check) {
       });
       todoContainer.appendChild(todoRow);
     });
+    const todoRow = document.querySelectorAll(".todo-row");
+    dragginFunctionality(todoRow);
   }
   console.log(currentTodo);
 }
@@ -881,4 +928,185 @@ sidebar.addEventListener("click", function (e) {
   check = clickedItem.children[1].textContent;
   displayTodo(todo, check);
 });
+function dragginFunctionality(todo) {
+  currentItem = null;
+  let activeRow = null;
 
+  todo.forEach((item) => {
+    item.addEventListener("dragstart", () => {
+      currentItem = item;
+      item.classList.add("dragging");
+    });
+
+    item.addEventListener("dragend", () => {
+      item.classList.remove("dragging");
+      currentItem = null;
+    });
+  });
+
+  todoContainer.addEventListener("dragover", function (e) {
+    e.preventDefault();
+
+    const targetRow = e.target.closest(".todo-row");
+    if (!targetRow || targetRow === currentItem) return;
+
+    if (activeRow && activeRow !== targetRow) {
+      activeRow.style.scale = "1";
+      activeRow.style.border = "1px solid #3d3d3d";
+    }
+
+    activeRow = targetRow;
+    activeRow.style.scale = "1.05";
+    activeRow.style.border = "2px solid white";
+  });
+
+  todoContainer.addEventListener("drop", function (e) {
+    e.preventDefault();
+
+    if (!activeRow || !currentItem) return;
+
+    activeRow.style.scale = "1";
+    activeRow.style.border = "1px solid #3d3d3d";
+
+    todoContainer.insertBefore(currentItem, activeRow);
+
+    activeRow = null;
+  });
+}
+async function deleteTodo(id) {
+  if (!db || !id) return console.error("No ID or DB not ready");
+
+  const transaction = db.transaction("todos", "readwrite");
+  const store = transaction.objectStore("todos");
+  store.delete(Number(id));
+
+  transaction.oncomplete = async () => {
+    console.log("Todo deleted:", id);
+    todo = await getTodos();
+    displayTodo(todo, check);
+    deleteOverlay.style.display = "none";
+  };
+
+  transaction.onerror = () => {
+    console.error("Delete failed");
+    deleteOverlay.style.display = "none";
+  };
+}
+function searchImplementation() {
+  if (!searchBtn || !display || !searchInput) return;
+
+  // OPEN SEARCH
+  searchBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    display.style.display = "flex";
+    searchInput.value = "";
+    searchInput.focus();
+    clearSearchResults();
+  });
+
+  // CLOSE WHEN CLICKING OVERLAY ONLY
+  display.addEventListener("click", (e) => {
+    if (e.target === display) {
+      closeSearch();
+    }
+  });
+
+  // BLOCK MODAL CONTENT CLICKS
+  document.querySelector(".search-modal")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+
+  // ESC TO CLOSE
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeSearch();
+  });
+}
+
+function closeSearch() {
+  display.style.display = "none";
+}
+
+function searchTodo(todo) {
+  console.log(todo);
+  let findTodo;
+  searchInput.addEventListener("input", function (e) {
+    console.log(this.value);
+    findTodo = todo.find((f) => f.title === this.value);
+  });
+}
+const searchResults = document.querySelector(".search-results");
+
+function clearSearchResults() {
+  if (searchResults) searchResults.innerHTML = "";
+}
+
+function searchTodo(todoList) {
+  if (!searchInput || !searchResults) return;
+
+  searchInput.addEventListener("input", function () {
+    const query = this.value.trim().toLowerCase();
+    searchResults.innerHTML = "";
+
+    if (!query) return;
+
+    const filteredTodos = todoList.filter(
+      (t) =>
+        t.title.toLowerCase().includes(query) ||
+        t.description.toLowerCase().includes(query) ||
+        t.WhereToPut.toLowerCase().includes(query)
+    );
+
+    if (filteredTodos.length === 0) {
+      searchResults.innerHTML = `<p class="no-result">No results found</p>`;
+      return;
+    }
+
+    filteredTodos.forEach(renderSearchItem);
+  });
+}
+function renderSearchItem(todo) {
+  const div = document.createElement("div");
+  div.className = "search-item";
+
+  div.innerHTML = `
+    <div class="search-item-top">
+      <p class="search-title"><i class="fa-solid fa-heading" style="color: #FFD43B;"></i> ${
+        todo.title
+      }</p>
+      <div class="search-location"><i class="fa-solid fa-audio-description" style="color: #74C0FC;"></i> ${
+        todo.WhereToPut
+      }</div>
+      <p class="search-desc"><i class="fa-solid fa-box-open" style="color: #B197FC;"></i> ${
+        todo.description || ""
+      }</p>
+    </div>
+  `;
+
+  div.addEventListener("click", () => {
+    jumpToTodo(todo.id, todo.WhereToPut);
+    closeSearch();
+  });
+
+  searchResults.appendChild(div);
+}
+function jumpToTodo(todoId, location) {
+  check = location;
+  displayTodo(todo, check);
+
+  setTimeout(() => {
+    const row = document.querySelector(`[data-todo-id="${todoId}"]`);
+    if (!row) return;
+
+    row.scrollIntoView({ behavior: "smooth", block: "center" });
+    row.classList.add("highlight");
+
+    setTimeout(() => row.classList.remove("highlight"), 1500);
+  }, 100);
+}
+const inbox = () => todo.filter((t) => t?.WhereToPut === "Inbox");
+const today = () => todo.filter((t) => t?.WhereToPut === "Today");
+function displayCountLable(todos, t1) {
+  console.log(todos.length);
+  todayCount.textContent = t1.length;
+  inboxCount.textContent = todos.length;
+}

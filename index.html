@@ -163,7 +163,6 @@
           </div>
           <div class="taskSecDivider">
             <div class="todoSidebar">
-              <!-- Top user / brand -->
               <div class="todoSidebar-user">
                 <div class="avatar">
                   <img src="https://i.pravatar.cc/64" alt="User" />
@@ -174,36 +173,30 @@
                   <i class="fa-regular fa-square"></i>
                 </div>
               </div>
-
-              <!-- Add task -->
               <button class="todoSidebar-add">
                 <span class="add-icon"><i class="fa-solid fa-plus"></i></span>
                 <span>Add task</span>
               </button>
 
-              <!-- Search -->
-              <button class="todoSidebar-item">
+              <button class="todoSidebar-item search">
                 <span class="icon"
                   ><i class="fa-solid fa-magnifying-glass"></i
                 ></span>
                 <span class="label">Search</span>
               </button>
 
-              <!-- Inbox (active) -->
               <button class="todoSidebar-item active clickedItem">
                 <span class="icon"><i class="fa-solid fa-inbox"></i></span>
                 <span class="label">Inbox</span>
-                <span class="count">2</span>
+                <span class="count inboxCount">2</span>
               </button>
 
-              <!-- Today -->
               <button class="todoSidebar-item clickedItem">
                 <span class="icon"><i class="fa-regular fa-calendar"></i></span>
                 <span class="label">Today</span>
-                <span class="count today">4</span>
+                <span class="count today todayCount">4</span>
               </button>
 
-              <!-- Upcoming -->
               <button class="todoSidebar-item clickedItem">
                 <span class="icon"
                   ><i class="fa-regular fa-calendar-days"></i
@@ -211,31 +204,11 @@
                 <span class="label">Upcoming</span>
               </button>
 
-              <!-- Filters & Labels -->
-              <button class="todoSidebar-item clickedItem">
-                <span class="icon"
-                  ><i class="fa-solid fa-table-cells-large"></i
-                ></span>
-                <span class="label">Filters &amp; Labels</span>
-              </button>
-
-              <!-- Completed -->
               <button class="todoSidebar-item clickedItem">
                 <span class="icon"
                   ><i class="fa-regular fa-circle-check"></i
                 ></span>
                 <span class="label">Completed</span>
-              </button>
-
-              <!-- Projects -->
-              <div class="todoSidebar-sectionTitle clickedItem">
-                My Projects
-              </div>
-
-              <button class="todoSidebar-item project">
-                <span class="icon"><i class="fa-solid fa-hashtag"></i></span>
-                <span class="label">Getting Started 👋</span>
-                <span class="count">15</span>
               </button>
 
               <div class="resizeHandle">
@@ -309,25 +282,79 @@
                       class="fa-solid fa-angle-down"
                       style="color: #63e6be"
                     ></i>
-                     <div class="whereToPut">
+                    <div class="whereToPut">
                       <div class="storage storageOne">
-                      <i class="fa-solid fa-calendar-day" style="color: #63E6BE;"></i>
+                        <i
+                          class="fa-solid fa-calendar-day"
+                          style="color: #63e6be"
+                        ></i>
                         <p>Today</p>
                       </div>
                       <div class="storage storageTwo">
-            <i class="fa-solid fa-inbox" style="color: #FFD43B;"></i>
+                        <i class="fa-solid fa-inbox" style="color: #ffd43b"></i>
                         <p>Inbox</p>
                       </div>
                       <div class="storage storageThree">
-                     <i class="fa-solid fa-clipboard-list" style="color: #B197FC;"></i>
+                        <i
+                          class="fa-solid fa-clipboard-list"
+                          style="color: #b197fc"
+                        ></i>
                         <p>Upcoming</p>
                       </div>
-                      
                     </div>
                   </div>
                   <div class="featBtn">
                     <button id="cancelTask">Cancel</button>
                     <button id="addTask">Add Task</button>
+                  </div>
+                </div>
+              </div>
+              <div class="delete-overlay" id="deleteOverlay">
+                <div class="delete-modal">
+                  <div class="delete-icon">
+                    <i class="fa-solid fa-trash"></i>
+                  </div>
+
+                  <h2 class="delete-title">Delete Todo</h2>
+
+                  <p class="delete-desc">
+                    Are you sure you want to delete this todo?
+                    <span>This action cannot be undone.</span>
+                  </p>
+
+                  <div class="delete-actions">
+                    <button class="btn-cancel">Cancel</button>
+                    <button class="btn-deletion">Delete</button>
+                  </div>
+                </div>
+              </div>
+              <div class="search-overlay" id="searchOverlay">
+                <div class="search-modal">
+                  <!-- Search Header -->
+                  <div class="search-header">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+
+                    <input
+                      type="text"
+                      class="search-input"
+                      placeholder="Search todos..."
+                      autofocus
+                    />
+
+                    <span class="search-esc">ESC</span>
+                  </div>
+
+                  <!-- Results -->
+                  <div class="search-results">
+                    <p class="search-hint">Start typing to search your todos</p>
+
+                    <!-- Result Item -->
+                    <!--
+      <div class="search-item">
+        <i class="fa-regular fa-circle-dot"></i>
+        <span>Finish GSAP animations</span>
+      </div>
+      -->
                   </div>
                 </div>
               </div>
