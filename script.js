@@ -1,4 +1,14 @@
+/*service worker for offline availability */
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then(() => console.log("Service Worker Registered"))
+      .catch((err) => console.error("SW error:", err));
+  });
+}
 /*global variables */
+let root = document.documentElement;
 const form = document.querySelector("#profileForm");
 const showError = document.querySelector(".showError");
 const overlay = document.querySelector("#loadingOverlay");
@@ -182,6 +192,8 @@ document.addEventListener("DOMContentLoaded", async (e) => {
     searchImplementation();
     displayTodo(todo, check);
     searchTodo(todo);
+    fetchQuotes();
+
     inboxvalue = inbox();
     todayvalue = today();
     displayCountLable(inboxvalue, todayvalue);
@@ -1110,3 +1122,129 @@ function displayCountLable(todos, t1) {
   todayCount.textContent = t1.length;
   inboxCount.textContent = todos.length;
 }
+/*************taskManger code finished here  ************/
+/**********DailyQuotes code started  ***********/
+let quoteText = document.querySelector(".quote-text");
+let author = document.querySelector(".quote-author");
+let quoteBtn = document.querySelector(".new-quote-btn");
+async function fetchQuotes() {
+  try {
+    const request = await fetch("https://dummyjson.com/quotes/random");
+    if (!request.ok) {
+      throw new Error("Failed to fetch quote");
+    }
+    const data = await request.json();
+    console.log(data);
+    quoteText.textContent = data?.quote;
+    author.innerHTML = `<i class="fa-solid fa-at" style="color: #63e6be"></i> — ${data?.author}`;
+  } catch (error) {
+    console.log(error);
+  }
+}
+quoteBtn.addEventListener("click", fetchQuotes);
+/**********DailyQuotes code ended  ***********/
+/*********Pomodoro Timer Code Started */
+const startBtn = document.querySelector("#startTimer");
+const resetBtn = document.querySelector("#resetBtn");
+const timer = document.querySelector(".time");
+const modes = document.querySelectorAll(".mode");
+const sessionNumber = document.querySelector(".sessionNumber");
+let interval = null;
+let minutes = 25;
+let seconds = 0;
+let n = 1;
+timer.textContent = "25:00";
+
+function setTime(time) {
+  clearInterval(interval);
+  interval = null;
+
+  const [min, sec] = time.split(":").map(Number);
+  minutes = min;
+  seconds = sec;
+
+  timer.textContent = time;
+}
+function startTimer() {
+  if (interval) return;
+
+  interval = setInterval(() => {
+    if (minutes <= 0 && seconds <= 0) {
+      clearInterval(interval);
+      interval = null;
+      sessionNumber.innerHTML = 1;
+      n += 1;
+      return;
+    }
+
+    if (seconds === 0) {
+      minutes--;
+      seconds = 59;
+    } else {
+      seconds--;
+    }
+
+    timer.textContent = `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`;
+  }, 1000);
+}
+function resetTimer() {
+  const activeMode = document.querySelector(".mode.active");
+  setTime(activeMode.dataset.time);
+}
+
+startBtn.addEventListener("click", startTimer);
+
+resetBtn.addEventListener("click", resetTimer);
+
+modes.forEach((mode) => {
+  mode.addEventListener("click", () => {
+    modes.forEach((btn) => btn.classList.remove("active"));
+
+    mode.classList.add("active");
+
+    setTime(mode.dataset.time);
+  });
+});
+
+(function () {
+  "use strict";
+
+  document.addEventListener("DOMContentLoaded", initThemeChanger);
+
+  function initThemeChanger() {
+    const themeContainer = document.querySelector(".themeChanger");
+    const themeBtn = themeContainer?.querySelector("button");
+
+    if (!themeBtn) {
+      console.error("❌ Theme button missing");
+      return;
+    }
+
+    const themes = [
+      "default",
+      "neon-frost",
+      "void-pulse",
+      "amber-core",
+      "toxic-mint",
+      "cosmic-violet",
+      "oceanic-deep",
+      "sunset-ember",
+      "arctic-ice",
+    ];
+    let currentIndex = parseInt(localStorage.getItem("appTheme")) || 0;
+
+    function switchTheme() {
+      document.documentElement.classList.remove(...themes);
+      document.documentElement.classList.add(themes[currentIndex]);
+      localStorage.setItem("appTheme", currentIndex);
+    }
+
+    switchTheme();
+
+    themeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      currentIndex = (currentIndex + 1) % themes.length;
+      switchTheme();
+    });
+  }
+})();
